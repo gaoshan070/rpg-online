@@ -35,7 +35,7 @@ const missionStates = new WeakMap<object, MissionStatus>();
 
 interface MissionStatus {
   activatedTowers: number;
-  alert: number;
+  // alert: number;
   bossSpawned: boolean;
   bossDefeated: boolean;
   enemiesSpawned: boolean;
@@ -50,7 +50,7 @@ function getMissionState(map: MissionMap): MissionStatus {
 
   const created: MissionStatus = {
     activatedTowers: 0,
-    alert: 0,
+    // alert: 0,
     bossSpawned: false,
     bossDefeated: false,
     enemiesSpawned: false,
@@ -61,7 +61,9 @@ function getMissionState(map: MissionMap): MissionStatus {
 
 function announce(map: MissionMap, message: string) {
   for (const player of map.getPlayers()) {
-    void player.showText(message);
+    player.showText(message, {autoClose: true}).catch((err) => {
+      console.error("Error showing text:", err);
+    });
   }
 }
 
@@ -86,17 +88,18 @@ function drawMarker(event: RpgEvent, label: string, color: string) {
 
 function setRole(player: RpgPlayer, role: Role) {
   const stats = role === "vanguard"
-    ? { name: "先锋", maxHp: 360, atk: 22, pdef: 13, speed: 2.2 }
-    : { name: "游骑", maxHp: 260, atk: 30, pdef: 6, speed: 2.8 };
+    ? { maxHp: 360, atk: 22, pdef: 13, speed: 2.2 }
+    : { maxHp: 260, atk: 30, pdef: 6, speed: 2.8 };
 
-  player.name = `回声${stats.name}`;
+  // player.name = `回声${stats.name}`;
+  const hpRatio = player.param[MAXHP] > 0 ? player.hp / player.param[MAXHP] : 1;
   player.speed = stats.speed;
   player.param[MAXHP] = stats.maxHp;
   player.param[MAXSP] = 100;
   player.param[ATK] = stats.atk;
   player.param[PDEF] = stats.pdef;
-  player.hp = stats.maxHp;
-  player.sp = 100;
+  player.hp = Math.max(1, Math.round(stats.maxHp * hpRatio));
+  player.sp = Math.min(player.sp ?? 100, 100);
   player.setVariable("war.role", role);
 }
 
@@ -116,17 +119,11 @@ const Commander = defineActionBattleEnemy({
   rewards: { exp: 80, gold: 50 },
 });
 
-function createScout(map: MissionMap): EventDefinition {
+function createScout(): EventDefinition {
   return {
     name: "敌方侦察兵",
     onInit() {
-      createActionEnemy(this, {
-        ...Scout,
-        onDefeated: () => {
-          const state = getMissionState(map);
-          state.alert = Math.max(0, state.alert - 4);
-        },
-      });
+      createActionEnemy(this, Scout);
     },
   };
 }
@@ -156,13 +153,13 @@ async function spawnInitialEnemies(map: MissionMap) {
     id: "war-scout-east",
     x: 650,
     y: 250,
-    event: createScout(map),
+    event: createScout(),
   });
   await map.createDynamicEvent({
     id: "war-scout-west",
     x: 160,
     y: 430,
-    event: createScout(map),
+    event: createScout(),
   });
 }
 
@@ -220,12 +217,12 @@ function createTower(towerNumber: number): EventDefinition {
       event.activated = true;
       const state = getMissionState(map);
       state.activatedTowers += 1;
-      state.alert = Math.max(0, state.alert - 12);
+      // state.alert = Math.max(0, state.alert - 12);
       drawMarker(this, "ON", "#16a34a");
-      announce(map, `通信塔 ${towerNumber} 已启动（${state.activatedTowers}/3）。警报值 ${state.alert}%。`);
+      announce(map, `通信塔 ${towerNumber} 已启动（${state.activatedTowers}/3）。`);
 
       if (state.activatedTowers === 3) {
-        await player.showText("三座通信塔全部上线。敌方指挥官正在赶来！");
+        // await player.showText("三座通信塔全部上线。敌方指挥官正在赶来！");
         await spawnCommander(map);
       }
     },
@@ -244,11 +241,12 @@ const SupplyCrate: EventDefinition = {
     crate.opened = true;
     player.addItem(FieldRation, 2);
     const map = player.getCurrentMap();
-    if (map) {
-      const state = getMissionState(map);
-      state.alert = Math.min(100, state.alert + 8);
-      announce(map, `补给箱已打开。获得 2 个战地口粮，警报值 ${state.alert}%。`);
-    }
+    if (map) announce(map, "补给箱已打开。获得 2 个战地口粮。");
+    // {
+    //   const state = getMissionState(map);
+    //   state.alert = Math.min(100, state.alert + 8);
+    //   announce(map, `补给箱已打开。获得 2 个战地口粮，警报值 ${state.alert}%。`);
+    // }
     drawMarker(this, "EMPTY", "#475569");
   },
 };

@@ -8,7 +8,7 @@
     "dev": "concurrently -k -n worker,vite \"pnpm dev:worker\" \"pnpm dev:vite\"",
     "dev:vite": "vite",
     "dev:worker": "wrangler dev --port 8787",
-    "deploy:dry-run": "wrangler deploy --dry-run",
+    "deploy:dry-run": "wrangler deploy --dry-run --env production",
     "publish:maps": "tsx src/publish-maps.ts",
     "test": "vitest run",
     "test:publication": "vitest run --config vitest.publication.config.ts",

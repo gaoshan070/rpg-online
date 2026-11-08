@@ -14,7 +14,7 @@ import { provideTiledMap } from "@rpgjs/tiledmap/client";
 
 startGame({
   providers: [
-    provideTiledMap({ basePath: "map" }),
+    provideTiledMap({ basePath: "/map" }),
     provideClientGlobalConfig(),
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
