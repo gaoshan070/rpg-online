@@ -185,6 +185,18 @@ npx skills add https://github.com/RSamaium/RPG-JS#v5
 4. [Save and load](https://v5.rpgjs.dev/guide/save-load), [translate your game](https://v5.rpgjs.dev/guide/i18n)
 5. [Put your MMORPG online](https://v5.rpgjs.dev/guide/deploy-mmorpg)
 
+## Continuous deployment
+
+Pushes to `main` run [the Cloudflare deployment workflow](./.github/workflows/deploy-cloudflare.yml).
+Configure these GitHub repository secrets before the first deployment:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` with permission to deploy Workers and Durable Objects
+- `RPGJS_MAP_UPDATE_TOKEN`, matching the production Worker secret
+
+The workflow tests and builds `samples/cloudflare-mmorpg`, deploys the production
+Worker and static assets, then publishes the `demo` map.
+
 Want the ideas behind the architecture? Read the [RPGJS philosophy](./docs/philosophy.md).
 
 **Coming from RPGJS v4?** `compatibilityV4Plugin()` from `@rpgjs/vite` runs a
