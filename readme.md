@@ -197,6 +197,12 @@ Configure these GitHub repository secrets before the first deployment:
 The workflow tests and builds `samples/cloudflare-mmorpg`, deploys the production
 Worker and static assets, then publishes the `demo` map.
 
+To deploy locally after `wrangler login`, run:
+
+```bash
+./scripts/deploy-cloudflare.sh
+```
+
 Want the ideas behind the architecture? Read the [RPGJS philosophy](./docs/philosophy.md).
 
 **Coming from RPGJS v4?** `compatibilityV4Plugin()` from `@rpgjs/vite` runs a
