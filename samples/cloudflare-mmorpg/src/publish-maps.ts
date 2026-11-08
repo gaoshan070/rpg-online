@@ -11,6 +11,10 @@ const mapIds = (process.env.RPGJS_MAP_IDS ?? "demo")
 if (!target) throw new Error("RPGJS_PUBLISH_TARGET is required");
 if (!token) throw new Error("RPGJS_MAP_UPDATE_TOKEN is required");
 if (mapIds.length === 0) throw new Error("RPGJS_MAP_IDS must contain a map id");
+const {protocol, hostname } = new URL(target);
+if (protocol !== "https:" && hostname !== "localhost" && hostname !== "127.0.0.1") {
+  throw new Error("RPGJS_PUBLISH_TARGET must use https or be localhost/");
+} 
 
 const publisher = createRpgServerTransport(serverModule, {
   initializeMaps: false,

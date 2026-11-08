@@ -2,9 +2,9 @@ import { defineConfig, loadEnv } from "vite";
 import { rpgjs, tiledMapFolderPlugin } from "@rpgjs/vite";
 import serverModule from "./src/server";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  if (!env.RPGJS_MAP_UPDATE_TOKEN) {
+  if (command === "serve" && !env.RPGJS_MAP_UPDATE_TOKEN) {
     throw new Error("Copy .env.example to .env.local before starting the sample.");
   }
 

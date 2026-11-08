@@ -33,6 +33,23 @@ describe("Cloudflare MMORPG map administration", () => {
     expect(response.status).toBe(401);
   });
 
+  it("rejects a wrong map update token", async () => {
+    const response = await SELF.fetch("https://example.test/parties/main/map-demo/map/update", {
+      method: "POST",
+      headers: { "content-type": "application/json","x-rpgjs-map-update-token": "wrong" },
+      body: JSON.stringify(mapPayload),
+    });
+    expect(response.status).toBe(401);
+  });
+
+  it("rejects unknown rooms", async () => {
+    const response = await SELF.fetch("https://example.test/parties/unknown/map-demo/map/update", {
+      method: "POST",
+      headers: { upgrade: "websocket" }     
+    });
+    expect(response.status).toBe(404);
+  });
+
   it("accepts a trusted map update", async () => {
     const response = await SELF.fetch("https://example.test/parties/main/map-demo/map/update", {
       method: "POST",

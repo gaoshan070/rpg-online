@@ -17,11 +17,16 @@ const roomWorker = createRpgServerWorker(serverModule, {
   partiesPath: "/parties/main",
 });
 
+const ROOMS = new Set(["lobby-1", "map-demo"]);
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    if (new URL(request.url).pathname.startsWith("/parties/")) {
-      return roomWorker.fetch(request, env, ctx);
-    }
+    const { pathname } = new URL(request.url);
+    if (pathname.startsWith("/parties/")) {
+      const room = pathname.match(/^\/parties\/main\/([^/]+)/)?.[1];
+      if (!room || !ROOMS.has(room)) return new Response("Room not found", { status: 404 });
+      return roomWorker.fetch(request, env, ctx); 
+    }    
     return env.ASSETS?.fetch(request) ?? new Response("Not Found", { status: 404 });
   },
 };
