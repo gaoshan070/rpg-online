@@ -31,6 +31,9 @@ public
 !playground/games/hotbar/public/
 !playground/games/hotbar/public/icons/
 !playground/games/hotbar/public/icons/*.svg
+!samples/cloudflare-mmorpg/public/
+!samples/cloudflare-mmorpg/public/hero.png
+!samples/cloudflare-mmorpg/public/monster.png
 .partykit
 .wrangler
 .vite
